@@ -6,7 +6,11 @@ import numpy as np
 import io
 from docx import Document
 
-reader = easyocr.Reader(['en', 'ch_sim'])
+@st.cache_resource
+def load_reader():
+    return easyocr.Reader(['en', 'ch_sim'])
+
+reader = load_reader()
 
 st.set_page_config(page_title="英语词汇扩展系统", layout="centered")
 st.title("📘 高三常忘英语词汇扩展学习系统")
@@ -37,23 +41,24 @@ def enrich_word_data(word, meaning):
     }
 
 def is_chinese(text):
-    return any('一' <= ch <= '鿿' for ch in text)
+    return any('\u4e00' <= ch <= '\u9fff' for ch in text)
 
 if uploaded_files:
-    for file in uploaded_files:
-        image = Image.open(file)
-        result = reader.readtext(np.array(image))
-        lines = [line[1] for line in result]
-        st.text(f"DEBUG: 共识别到 {len(lines)} 行文字")
-        for line in lines:
-            parts = line.strip().split()
-            for i in range(1, len(parts) - 1):
-                if parts[i].isalpha() and is_chinese(parts[i + 1]):
-                    word = parts[i]
-                    meaning = ''.join(parts[i + 1:])
-                    result_data = enrich_word_data(word, meaning)
-                    results.append(result_data)
-                    break
+    with st.spinner("正在识别图像并提取词汇，请稍候..."):
+        for file in uploaded_files:
+            image = Image.open(file)
+            result = reader.readtext(np.array(image))
+            lines = [line[1] for line in result]
+            st.text(f"DEBUG: 共识别到 {len(lines)} 行文字")
+            for line in lines:
+                parts = line.strip().split()
+                for i in range(1, len(parts) - 1):
+                    if parts[i].isalpha() and is_chinese(parts[i + 1]):
+                        word = parts[i]
+                        meaning = ''.join(parts[i + 1:])
+                        result_data = enrich_word_data(word, meaning)
+                        results.append(result_data)
+                        break
 
 if not results and not uploaded_files:
     results = [enrich_word_data("violate", "违反")]
