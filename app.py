@@ -51,16 +51,14 @@ if uploaded_files:
             result = reader.readtext(np.array(image))
             lines = [line[1] for line in result]
             st.text(f"DEBUG: 共识别到 {len(lines)} 行文字")
-            st.write(lines)  # 显示所有提取文本
-            for line in lines:
-                parts = line.strip().split()
-                for i in range(len(parts) - 1):
-                    if parts[i].isalpha() and is_chinese(parts[i + 1]):
-                        word = parts[i]
-                        meaning = ''.join(parts[i + 1:])
-                        result_data = enrich_word_data(word, meaning)
-                        results.append(result_data)
-                        break
+            st.write(lines)  # 调试显示所有文本
+
+            for i in range(len(lines) - 1):
+                if lines[i].isalpha() and is_chinese(lines[i + 1]):
+                    word = lines[i]
+                    meaning = lines[i + 1]
+                    result_data = enrich_word_data(word, meaning)
+                    results.append(result_data)
 
 if not results and not uploaded_files:
     results = [enrich_word_data("violate", "违反")]
