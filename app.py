@@ -2,23 +2,19 @@ import streamlit as st
 import pandas as pd
 import easyocr
 from PIL import Image
+import numpy as np
 import io
 from docx import Document
 
-# 初始化 OCR 引擎
 reader = easyocr.Reader(['en', 'ch_sim'])
 
-# 配置页面
 st.set_page_config(page_title="英语词汇扩展系统", layout="centered")
 st.title("📘 高三常忘英语词汇扩展学习系统")
 
-# 上传截图
 uploaded_files = st.file_uploader("上传中英文截图（支持多张）", type=["png", "jpg", "jpeg"], accept_multiple_files=True)
 
-# 初始化表格
 results = []
 
-# 示例词汇补全函数（用于真实部署时替换为完整词库逻辑）
 def enrich_word_data(word, meaning):
     sample_dict = {
         "violate": {
@@ -28,7 +24,6 @@ def enrich_word_data(word, meaning):
             "derivatives": "violates (第三人称单数), violating (现在分词), violated (过去式/过去分词), violation (n. 违反), violator (n. 违规者)",
             "confusing": "violet（紫罗兰）violent（暴力的）"
         }
-        # 更多词条可扩展...
     }
     data = sample_dict.get(word.lower(), {})
     return {
@@ -41,13 +36,10 @@ def enrich_word_data(word, meaning):
         "confusing": data.get("confusing", "")
     }
 
-# 处理上传图片
 if uploaded_files:
     for file in uploaded_files:
         image = Image.open(file)
-    import numpy as np
-result = reader.readtext(np.array(image))
-
+        result = reader.readtext(np.array(image))
         text = "\n".join([line[1] for line in result])
         lines = text.strip().split('\n')
         for line in lines:
@@ -58,13 +50,11 @@ result = reader.readtext(np.array(image))
                 result = enrich_word_data(word, meaning)
                 results.append(result)
 
-# 展示并导出结果
 if results:
     df = pd.DataFrame(results)
     st.success(f"共提取到 {len(results)} 个词汇")
     st.dataframe(df)
 
-    # 导出为 Word 文档
     doc = Document()
     doc.add_heading("高三英语常忘词扩展记忆手册", level=1)
     for item in results:
