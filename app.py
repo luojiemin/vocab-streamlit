@@ -51,6 +51,7 @@ if uploaded_files:
             result = reader.readtext(np.array(image))
             lines = [line[1] for line in result]
             st.text(f"DEBUG: 共识别到 {len(lines)} 行文字")
+            st.write(lines)  # 关键调试输出
             for line in lines:
                 parts = line.strip().split()
                 for i in range(1, len(parts) - 1):
