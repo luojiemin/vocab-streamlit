@@ -1,4 +1,6 @@
 import streamlit as st
+st.set_page_config(page_title="英语词汇扩展系统", layout="centered")
+
 import pandas as pd
 import easyocr
 from PIL import Image
@@ -12,7 +14,6 @@ def load_reader():
 
 reader = load_reader()
 
-st.set_page_config(page_title="英语词汇扩展系统", layout="centered")
 st.title("📘 高三常忘英语词汇扩展学习系统")
 
 uploaded_files = st.file_uploader("上传中英文截图（支持多张）", type=["png", "jpg", "jpeg"], accept_multiple_files=True)
