@@ -1,10 +1,12 @@
 import streamlit as st
 import pandas as pd
 import easyocr
-reader = easyocr.Reader(['en', 'ch_sim'])
 from PIL import Image
 import io
 from docx import Document
+
+# 初始化 OCR 引擎
+reader = easyocr.Reader(['en', 'ch_sim'])
 
 # 配置页面
 st.set_page_config(page_title="英语词汇扩展系统", layout="centered")
@@ -44,7 +46,7 @@ if uploaded_files:
     for file in uploaded_files:
         image = Image.open(file)
         result = reader.readtext(image)
-text = "\\n".join([line[1] for line in result])
+        text = "\n".join([line[1] for line in result])
         lines = text.strip().split('\n')
         for line in lines:
             parts = line.strip().split()
