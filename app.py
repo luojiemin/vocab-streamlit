@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
-import pytesseract
+import easyocr
+reader = easyocr.Reader(['en', 'ch_sim'])
 from PIL import Image
 import io
 from docx import Document
@@ -42,7 +43,8 @@ def enrich_word_data(word, meaning):
 if uploaded_files:
     for file in uploaded_files:
         image = Image.open(file)
-        text = pytesseract.image_to_string(image, lang="eng+chi_sim")
+        result = reader.readtext(image)
+text = "\\n".join([line[1] for line in result])
         lines = text.strip().split('\n')
         for line in lines:
             parts = line.strip().split()
