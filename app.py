@@ -51,10 +51,10 @@ if uploaded_files:
             result = reader.readtext(np.array(image))
             lines = [line[1] for line in result]
             st.text(f"DEBUG: 共识别到 {len(lines)} 行文字")
-            st.write(lines)  # 关键调试输出
+            st.write(lines)  # 显示所有提取文本
             for line in lines:
                 parts = line.strip().split()
-                for i in range(1, len(parts) - 1):
+                for i in range(len(parts) - 1):
                     if parts[i].isalpha() and is_chinese(parts[i + 1]):
                         word = parts[i]
                         meaning = ''.join(parts[i + 1:])
