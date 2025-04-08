@@ -21,8 +21,8 @@ def enrich_word_data(word, meaning):
             "pos": "v.",
             "collocation": "violate the law（违法）",
             "example": "He was fined for violating traffic rules.（他因违反交通规则被罚款。）",
-            "derivatives": "violates (第三人称单数), violating (现在分词), violated (过去式/过去分词), violation (n. 违反), violator (n. 违规者)",
-            "confusing": "violet（紫罗兰）violent（暴力的）"
+            "derivatives": "violates, violating, violated, violation (n.), violator (n.)",
+            "confusing": "violet（紫罗兰）, violent（暴力的）"
         }
     }
     data = sample_dict.get(word.lower(), {})
@@ -40,15 +40,19 @@ if uploaded_files:
     for file in uploaded_files:
         image = Image.open(file)
         result = reader.readtext(np.array(image))
-        text = "\n".join([line[1] for line in result])
-        lines = text.strip().split('\n')
+        lines = [line[1] for line in result]
+        st.text(f"DEBUG: 共识别到 {len(lines)} 行文字")
         for line in lines:
             parts = line.strip().split()
             if len(parts) >= 2:
                 word = parts[0]
                 meaning = ''.join(parts[1:])
-                result = enrich_word_data(word, meaning)
-                results.append(result)
+                result_data = enrich_word_data(word, meaning)
+                results.append(result_data)
+
+# fallback 示例词条
+if not results and not uploaded_files:
+    results = [enrich_word_data("violate", "违反")]
 
 if results:
     df = pd.DataFrame(results)
@@ -69,4 +73,4 @@ if results:
     buffer.seek(0)
     st.download_button("📄 下载 Word 文档", buffer, file_name="词汇扩展结果.docx")
 else:
-    st.info("请上传包含中英文单词的截图，系统将自动识别并补全词汇信息。")
+    st.warning("未能识别到词汇，请确认截图中是否包含英文单词和释义。")
