@@ -45,7 +45,9 @@ def enrich_word_data(word, meaning):
 if uploaded_files:
     for file in uploaded_files:
         image = Image.open(file)
-        result = reader.readtext(image)
+    import numpy as np
+result = reader.readtext(np.array(image))
+
         text = "\n".join([line[1] for line in result])
         lines = text.strip().split('\n')
         for line in lines:
