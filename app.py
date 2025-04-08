@@ -44,9 +44,9 @@ if uploaded_files:
         lines = text.strip().split('\n')
         for line in lines:
             parts = line.strip().split()
-            if len(parts) >= 3 and parts[0].isdigit():
-                word = parts[1]
-                meaning = ''.join(parts[2:])
+            if len(parts) >= 2:
+                word = parts[0]
+                meaning = ''.join(parts[1:])
                 result = enrich_word_data(word, meaning)
                 results.append(result)
 
