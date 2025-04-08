@@ -36,6 +36,9 @@ def enrich_word_data(word, meaning):
         "confusing": data.get("confusing", "")
     }
 
+def is_chinese(text):
+    return any('一' <= ch <= '鿿' for ch in text)
+
 if uploaded_files:
     for file in uploaded_files:
         image = Image.open(file)
@@ -44,13 +47,14 @@ if uploaded_files:
         st.text(f"DEBUG: 共识别到 {len(lines)} 行文字")
         for line in lines:
             parts = line.strip().split()
-            if len(parts) >= 2:
-                word = parts[0]
-                meaning = ''.join(parts[1:])
-                result_data = enrich_word_data(word, meaning)
-                results.append(result_data)
+            for i in range(1, len(parts) - 1):
+                if parts[i].isalpha() and is_chinese(parts[i + 1]):
+                    word = parts[i]
+                    meaning = ''.join(parts[i + 1:])
+                    result_data = enrich_word_data(word, meaning)
+                    results.append(result_data)
+                    break
 
-# fallback 示例词条
 if not results and not uploaded_files:
     results = [enrich_word_data("violate", "违反")]
 
